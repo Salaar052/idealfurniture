@@ -4,6 +4,7 @@ import Admin from "@/models/Admin";
 import { generateToken } from "@/lib/auth";
 
 export async function POST(req: Request) {
+  console.log("Received login request");
   
   try {
     const { username, password } = await req.json();
@@ -39,6 +40,7 @@ export async function POST(req: Request) {
         id: admin._id,
         username: admin.username,
       },
+      
     });
   } catch (error) {
     console.error("Login error:", error);

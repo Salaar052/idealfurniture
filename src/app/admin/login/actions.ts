@@ -8,11 +8,17 @@ export async function loginAction(prevState: any, formData: FormData) {
   const password = formData.get("password");
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ? process.env.NEXT_PUBLIC_BASE_URL : ''}/api/admin/login`, {
+  const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : ""; // relative works in production (Netlify, Vercel)
+
+const res = await fetch(`${baseUrl}/api/admin/login`, {
   method: "POST",
   headers: { "Content-Type": "application/json" },
   body: JSON.stringify({ username, password }),
 });
+
 
 
     const data = await res.json();
