@@ -11,9 +11,13 @@ export default function ProductsPage() {
   const { products, fetchProducts } = useProductStore();
 
   // Fetch products once on client-side if store is empty
-  useEffect(() => {
-    if (!products.length) fetchProducts();
-  }, [products, fetchProducts]);
+ useEffect(() => {
+  if (products.length === 0) {
+    fetchProducts();
+  }
+  
+}, []); 
+
 
   return (
     <div className="min-h-screen flex flex-col bg-app-background">
