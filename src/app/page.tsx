@@ -1,103 +1,162 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Navbar from "@/components/navbar";
+import AnnouncementCarousel from "@/components/carosel";
+import Footer from "@/components/footer";
 import Image from "next/image";
+import Link from "next/link";
+import { useProductStore, Product } from "@/store/useProductStore";
 
-export default function Home() {
+function groupByCategory(products: Product[]) {
+  const grouped: Record<string, Product[]> = {};
+  products.forEach((p) => {
+    if (!grouped[p.category]) grouped[p.category] = [];
+    grouped[p.category].push(p);
+  });
+
+  const CATEGORY_ORDER = ["bed", "sofa", "table", "cupboard", "chairs", "other"];
+  const sorted: Record<string, Product[]> = {};
+
+  CATEGORY_ORDER.forEach((cat) => {
+    if (grouped[cat]) sorted[cat] = grouped[cat];
+  });
+  Object.keys(grouped).forEach((cat) => {
+    if (!CATEGORY_ORDER.includes(cat)) sorted[cat] = grouped[cat];
+  });
+
+  return sorted;
+}
+
+function slugify(name: string) {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
+}
+
+export default function HomePage() {
+  const { products, fetchProducts } = useProductStore();
+  const [showAllCategories, setShowAllCategories] = useState(false);
+
+  useEffect(() => {
+    if (products.length === 0) fetchProducts();
+  }, [products, fetchProducts]);
+
+  const categories = groupByCategory(products);
+  const categoryEntries = Object.entries(categories);
+
+  // Decide how many categories to show
+  const visibleCategories = showAllCategories ? categoryEntries : categoryEntries.slice(0, 3);
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="min-h-screen flex flex-col bg-app-background">
+      <Navbar />
+      <AnnouncementCarousel />
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+      {/* 🔗 View All Button */}
+      <div className="container mx-auto px-4 mt-4 flex justify-end">
+        <Link
+          href="/products"
+          className="bg-primary text-white px-5 py-2 rounded-full font-medium hover:bg-primary/90 transition-all duration-300 shadow-md"
+        >
+          View All Products →
+        </Link>
+      </div>
+
+      {/* 🏷️ Categories Section */}
+      <main className="flex-1 container mx-auto px-4 flex flex-col items-center">
+        {products.length === 0 && (
+          <p className="text-gray-500 text-center mt-10">
+            No products found. Please check back later.
+          </p>
+        )}
+
+        <div className="w-full max-w-6xl flex flex-col items-center">
+          {visibleCategories.map(([category, items]) => (
+            <section
+              key={category}
+              aria-labelledby={`${category}-title`}
+              className="border-b border-gray-200 pb-6 last:border-none w-full"
+            >
+              <div className="relative flex items-center justify-center mb-6">
+                <h2
+                  id={`${category}-title`}
+                  className="text-4xl font-bold text-primary capitalize"
+                >
+                  {`${category} Set`}
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.slice(0, 3).map((product) => (
+                  <Link
+                    key={product._id}
+                    href={`/products/${slugify(product.name)}`}
+                    className="group border rounded-2xl shadow-md bg-white hover:shadow-lg transition-all duration-300 overflow-hidden"
+                  >
+                    <div className="relative w-full h-50">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-muted mb-2 truncate">
+                        {product.name}
+                      </h3>
+                      <p className="text-muted text-sm line-clamp-2">
+                        {product.description}
+                      </p>
+                      <p className="text-black font-bold mt-3">
+                        Rs. {product.price}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {items.length > 3 && (
+                <div className="text-right mt-4">
+                  <Link
+                    href={`/categories/${category}`}
+                    className="text-primary font-medium hover:underline"
+                  >
+                    View all →
+                  </Link>
+                </div>
+              )}
+            </section>
+          ))}
+
+          {/* ✅ View More / Show Less Button */}
+          {categoryEntries.length > 3 && (
+            <button
+              onClick={() => setShowAllCategories(!showAllCategories)}
+              className="mt-6 px-6 py-2 bg-primary text-white rounded-full hover:bg-primary/90 transition-all duration-300 font-medium mb-6"
+            >
+              {showAllCategories ? "Show Less" : "View More"}
+            </button>
+          )}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+
+      {/* 💬 WhatsApp Floating Button */}
+      <div className="fixed bottom-6 right-6 z-50">
         <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+          href="https://wa.me/923177401136"
           target="_blank"
           rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-full hover:bg-green-600 transition-all duration-300 text-base font-medium shadow-md hover:shadow-lg"
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
+          Chat on WhatsApp
         </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      <Footer />
     </div>
   );
 }
