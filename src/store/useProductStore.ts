@@ -20,7 +20,7 @@ export const useProductStore = create<ProductStore>((set) => ({
   setProducts: (products) => set({ products }),
   fetchProducts: async () => {
     try {
-      const res = await fetch("/api/products/get?start=0&limit=9999");
+      const res = await fetch("/api/products/get");
       if (!res.ok) throw new Error("Failed to fetch products");
       const data = await res.json();
       set({ products: data.products || [] });

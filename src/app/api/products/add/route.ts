@@ -4,15 +4,15 @@ import Product from "@/models/Product";
 import cloudinary from "@/lib/cloudinary";
 import { verifyAdmin } from "@/middleware/verifyAdmin";
 
-
 export async function POST(req: Request) {
-  
-    const authError = await verifyAdmin(req);
-    
-  if (!authError) return NextResponse.json(
-      { message: "Unauthorized", },
+  // Verify admin
+  const authError = await verifyAdmin(req);
+  if (!authError)
+    return NextResponse.json(
+      { message: "Unauthorized" },
       { status: 401 }
-    ); // unauthorized
+    );
+
   try {
     await dbConnect();
 
@@ -27,13 +27,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "All fields required" }, { status: 400 });
     }
 
-    // Upload image to Cloudinary
+    // Convert File to Buffer
     const arrayBuffer = await image.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
+    // Upload to Cloudinary with automatic optimization
     const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
-        { folder: "ideal-furniture/products" },
+        {
+          folder: "ideal-furniture/products",
+          transformation: [
+            { width: 1200, height: 900, crop: "limit" }, // resize large images
+            { quality: "auto" },                          // auto compression
+            { fetch_format: "auto" },                     // WebP/AVIF if supported
+          ],
+        },
         (error, result) => {
           if (error || !result) reject(error);
           else resolve(result);
@@ -56,7 +64,7 @@ export async function POST(req: Request) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error(error);
+    console.error("Error adding product:", error);
     return NextResponse.json(
       { message: "Error adding product", error: error.message },
       { status: 500 }

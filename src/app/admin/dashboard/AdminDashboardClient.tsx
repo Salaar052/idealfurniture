@@ -56,7 +56,7 @@ export default function AdminDashboardClient({ initialProducts }: Props) {
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-md p-4 pb-2 shadow-sm">
       <div className="flex h-12 w-12 shrink-0 items-center">
     <button
-      onClick={() => router.back()}
+      onClick={() => router.push("/")}
       className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-all"
     >
       <svg

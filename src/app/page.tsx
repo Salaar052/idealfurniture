@@ -15,7 +15,14 @@ function groupByCategory(products: Product[]) {
     grouped[p.category].push(p);
   });
 
-  const CATEGORY_ORDER = ["bed", "sofa", "table", "cupboard", "chairs", "other"];
+  const CATEGORY_ORDER = [
+    "bed",
+    "sofa",
+    "table",
+    "cupboard",
+    "chairs",
+    "other",
+  ];
   const sorted: Record<string, Product[]> = {};
 
   CATEGORY_ORDER.forEach((cat) => {
@@ -29,14 +36,16 @@ function groupByCategory(products: Product[]) {
 }
 
 function slugify(name: string) {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)+/g, "");
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 }
 
 export default function HomePage() {
   const { products, fetchProducts } = useProductStore();
   const fetchedRef = useRef(false);
 
-  // Fetch products only once per page load
   useEffect(() => {
     if (!fetchedRef.current && products.length === 0) {
       fetchedRef.current = true;
@@ -52,14 +61,15 @@ export default function HomePage() {
       <Navbar />
       <AnnouncementCarousel />
 
-      <div className="container mx-auto px-4 mt-4 flex justify-end">
-        <Link
-          href="/products"
-          className="bg-primary text-white px-5 py-2 rounded-full font-medium hover:bg-primary/90 transition-all duration-300 shadow-md"
-        >
-          View All →
-        </Link>
-      </div>
+     <div className="container mx-auto px-4 mt-4 flex justify-end">
+  <Link
+    href="/products"
+    className="bg-primary text-white px-3 py-1 sm:px-5 sm:py-2 text-sm sm:text-base rounded-full font-medium hover:bg-primary/90 transition-all duration-300 shadow-md"
+  >
+    View All →
+  </Link>
+</div>
+
 
       <main className="flex-1 container mx-auto px-4 flex flex-col items-center">
         {products.length === 0 && (
@@ -70,18 +80,29 @@ export default function HomePage() {
 
         <div className="w-full max-w-6xl flex flex-col items-center">
           {visibleCategories.map(([category, items]) => (
-            <section key={category} aria-labelledby={`${category}-title`} className="border-b border-gray-200 pb-6 last:border-none w-full">
-              <div className="relative flex items-center justify-center mb-6">
-                <h2 id={`${category}-title`} className="text-4xl font-bold text-primary capitalize">
-                  {`${category} Set`}
-                </h2>
+            <section
+              key={category}
+              aria-labelledby={`${category}-title`}
+              className="border-b border-gray-200 pb-6 last:border-none w-full"
+            >
+              <div className="relative flex items-center justify-center my-6">
+               <h2
+  id={`${category}-title`}
+  className="text-2xl sm:text-3xl md:text-4xl font-bold text-primary capitalize"
+>
+  {`${category} Set`}
+</h2>
+
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {items.slice(0, 3).map((product, index) => (
+                {items.slice(0, 3).map((product) => (
                   <Link
                     key={product._id}
-                    href={`/products/${slugify(product.name)}`}
+                    href={{
+                      pathname: `/products/${slugify(product.name)}`,
+                      query: { product: JSON.stringify(product) }, // pass product as query
+                    }}
                     className="group border rounded-2xl shadow-md bg-white hover:shadow-lg transition-all duration-300 overflow-hidden"
                   >
                     <div className="relative w-full aspect-[4/3]">
@@ -91,13 +112,18 @@ export default function HomePage() {
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        priority={index < 3}
                       />
                     </div>
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold text-muted mb-2 truncate">{product.name}</h3>
-                      <p className="text-muted text-sm line-clamp-2">{product.description}</p>
-                      <p className="text-black font-bold mt-3">Rs. {product.price}</p>
+                      <h3 className="text-lg font-semibold text-muted mb-2 truncate">
+                        {product.name}
+                      </h3>
+                      <p className="text-muted text-sm line-clamp-2">
+                        {product.description}
+                      </p>
+                      <p className="text-black font-bold mt-3">
+                        Rs. {product.price}
+                      </p>
                     </div>
                   </Link>
                 ))}
@@ -105,7 +131,10 @@ export default function HomePage() {
 
               {items.length > 3 && (
                 <div className="text-right mt-4">
-                  <Link href={`/categories/${category}`} className="text-primary font-medium hover:underline">
+                  <Link
+                    href={`/categories/${category}`}
+                    className="text-primary font-medium hover:underline"
+                  >
                     View all →
                   </Link>
                 </div>
