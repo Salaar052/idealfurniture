@@ -4,46 +4,27 @@ import Product from "@/models/Product";
 
 export async function GET(req: Request) {
   try {
-    console.log("📦 Fetching products...");
+    console.log("📦 Fetching all products...");
 
-    // Connect to MongoDB (cached connection)
+    // Connect to MongoDB
     await dbConnect();
 
-    // Extract query params
-    const { searchParams } = new URL(req.url);
-    const start = Number(searchParams.get("start")) || 0;
-    const limit = Number(searchParams.get("limit")) || 10;
-    const category = searchParams.get("category");
+    // Fetch all products without sorting by createdAt
+    const products = await Product.find().lean();
 
-    // Build dynamic filter
-    const filter = category && category !== "all" ? { category } : {};
-
-    // Fetch products efficiently with lean()
-    const [products, total] = await Promise.all([
-      Product.find(filter)
-        .skip(start)
-        .limit(limit)
-        .sort({ createdAt: -1 })
-        .lean(),
-      Product.countDocuments(filter),
-    ]);
-
-    const hasMore = start + limit < total;
-
-    console.log(`✅ Fetched ${products.length}/${total} products`);
+    console.log(`✅ Fetched ${products.length} products`);
 
     return NextResponse.json(
       {
         success: true,
-        message: "Products fetched successfully",
+        message: "All products fetched successfully",
         products,
-        total,
-        hasMore,
+        total: products.length,
       },
       {
         status: 200,
         headers: {
-          "Cache-Control": "no-store", // prevent caching stale data
+          "Cache-Control": "no-store",
         },
       }
     );

@@ -20,17 +20,39 @@ export default function ProductDetailClient({ product: productFromServer, slug }
       productFromServer ||
       null
   );
+  const [isLoading, setIsLoading] = useState(!product);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (!product) {
-      fetchProducts().then((_) => {
+      setIsLoading(true);
+      fetchProducts().then(() => {
         const updatedProducts = useProductStore.getState().products;
         const found = updatedProducts.find((p) => p.name.toLowerCase().replace(/\s+/g, "-") === slug);
         setProduct(found || null);
+        setIsLoading(false);
       });
     }
   }, [product, slug, fetchProducts]);
+
+  if (isLoading) {
+    // Skeleton loader while fetching product
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
+        <Navbar />
+        <div className="max-w-4xl w-full animate-pulse flex flex-col items-center space-y-6 py-10">
+          <div className="h-6 w-40 bg-gray-300 rounded" /> {/* title skeleton */}
+          <div className="h-[300px] w-full bg-gray-200 rounded-lg" /> {/* image skeleton */}
+          <div className="space-y-3 w-full">
+            <div className="h-6 w-32 bg-gray-300 rounded" />
+            <div className="h-4 w-48 bg-gray-300 rounded" />
+            <div className="h-4 w-full bg-gray-300 rounded" />
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return <div className="min-h-screen flex items-center justify-center text-muted">Product not found.</div>;
@@ -47,7 +69,15 @@ export default function ProductDetailClient({ product: productFromServer, slug }
             </div>
 
             <div className="cursor-pointer mb-6 flex justify-center" onClick={() => setIsModalOpen(true)}>
-              <Image src={product.image} alt={product.name} width={600} height={600} className="object-contain rounded-lg" />
+              <Image
+                src={product.image}
+                alt={product.name}
+                width={600}
+                height={600}
+                className="object-contain rounded-lg"
+                placeholder="blur"
+                blurDataURL="/images/placeholder.png"
+              />
             </div>
 
             <div className="w-full mt-6 space-y-4 text-center sm:text-left">
@@ -72,7 +102,15 @@ export default function ProductDetailClient({ product: productFromServer, slug }
             <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-white text-3xl font-bold z-50">
               &times;
             </button>
-            <Image src={product.image} alt={product.name} width={1200} height={900} className="object-contain max-h-[90vh] max-w-[90vw]" />
+            <Image
+              src={product.image}
+              alt={product.name}
+              width={1200}
+              height={900}
+              className="object-contain max-h-[90vh] max-w-[90vw]"
+              placeholder="blur"
+              blurDataURL="/images/blur.jpeg"
+            />
           </div>
         )}
       </div>

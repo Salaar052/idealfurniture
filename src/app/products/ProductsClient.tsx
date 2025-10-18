@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useMemo, memo } from "react";
+import { useState, useMemo, useEffect, memo, useRef } from "react";
 import CategoryFilter from "@/components/categoryFilter";
 import Link from "next/link";
 import Image from "next/image";
-import {useProductStore} from "@/store/useProductStore"; // your zustand store
+import { useProductStore } from "@/store/useProductStore";
 
 interface Product {
   _id: string;
@@ -15,12 +15,9 @@ interface Product {
   description: string;
 }
 
-/* ✅ Memoized Product Card */
 const ProductCard = memo(function ProductCard({ product }: { product: Product }) {
   const slug = encodeURIComponent(product.name.toLowerCase().replace(/\s+/g, "-"));
-  const whatsappUrl = `https://wa.me/923177401136?text=${encodeURIComponent(
-    `Hi! I'm interested in the ${product.name}.`
-  )}`;
+  const whatsappUrl = `https://wa.me/923177401136?text=${encodeURIComponent(`Hi! I'm interested in the ${product.name}.`)}`;
 
   return (
     <div className="flex flex-col bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 group mb-5 mr-5">
@@ -32,15 +29,15 @@ const ProductCard = memo(function ProductCard({ product }: { product: Product })
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover"
+            placeholder="blur"
+            blurDataURL="/images/blur.jpeg"
           />
         </div>
       </Link>
 
       <div className="p-3 flex flex-col gap-2">
         <Link href={`/products/${slug}`}>
-          <p className="text-muted text-base font-semibold line-clamp-1 hover:underline">
-            {product.name}
-          </p>
+          <p className="text-muted text-base font-semibold line-clamp-1 hover:underline">{product.name}</p>
         </Link>
         <p className="text-muted text-base font-medium">${product.price.toFixed(2)}</p>
         <a
@@ -57,25 +54,37 @@ const ProductCard = memo(function ProductCard({ product }: { product: Product })
 });
 
 export default function ProductsClient() {
-  const products = useProductStore((state) => state.products);
+  const { products, fetchProducts,productCount } = useProductStore();
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const fetchOnceRef = useRef(false);
 
-  /* ✅ Efficient filtering using memo */
+  // Fetch products only once
+  useEffect(() => {
+    if (!products.length && !fetchOnceRef.current) {
+      fetchOnceRef.current = true;
+      fetchProducts();
+    }
+  }, [products.length, fetchProducts]);
+
   const visibleProducts = useMemo(() => {
     return selectedCategory === "all"
       ? products
       : products.filter((p) => p.category === selectedCategory);
   }, [products, selectedCategory]);
 
-  if (!products.length) {
-    return (
-      <div className="flex flex-col items-center justify-center py-20">
-        <span className="material-symbols-outlined text-6xl text-gray-300">inventory_2</span>
-        <h3 className="mt-4 text-lg font-medium text-[#1b130d]">No products found</h3>
-        <p className="mt-1 text-sm text-[#9a6c4c]">Try selecting a different category</p>
+  // Determine placeholder count dynamically
+  const placeholderCount = productCount // at least 3 to match grid row
+
+  const placeholders = Array.from({ length: placeholderCount }).map((_, idx) => (
+    <div key={idx} className="flex flex-col bg-gray-200 rounded-lg animate-pulse mb-5 mr-5">
+      <div className="relative w-full aspect-[4/3] bg-gray-300" />
+      <div className="p-3 flex flex-col gap-2">
+        <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+        <div className="h-6 bg-gray-300 rounded w-1/3 mt-2"></div>
       </div>
-    );
-  }
+    </div>
+  ));
 
   return (
     <>
@@ -83,9 +92,9 @@ export default function ProductsClient() {
 
       <main className="flex-1 px-4 md:px-8 lg:px-16 py-6 md:py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {visibleProducts.map((product) => (
+          {products.length ? visibleProducts.map((product: Product) => (
             <ProductCard key={product._id} product={product} />
-          ))}
+          )) : placeholders}
         </div>
       </main>
     </>
