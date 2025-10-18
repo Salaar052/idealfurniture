@@ -1,11 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { useState } from "react";
 
 export default function Navbar() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
   return (
     <nav className="sticky top-0 z-50 bg-background-light dark:bg-background-dark shadow-sm ">
       <div className="flex items-center justify-between p-4 px-10">

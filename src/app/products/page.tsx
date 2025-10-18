@@ -1,22 +1,11 @@
-"use client";
 
-import { useEffect } from "react";
 import Navbar from "@/components/navbar";
 import AnnouncementCarousel from "@/components/carosel";
 import Footer from "@/components/footer";
 import ProductsClient from "./ProductsClient";
-import { useProductStore } from "@/store/useProductStore";
 
 export default function ProductsPage() {
-  const { products, fetchProducts } = useProductStore();
 
-  // Fetch products once on client-side if store is empty
- useEffect(() => {
-  if (products.length === 0) {
-    fetchProducts();
-  }
-  
-}, []); 
 
 
   return (
