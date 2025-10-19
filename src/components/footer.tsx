@@ -9,15 +9,20 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div>
-            <h3 className="text-xl font-bold text-primary dark:text-white mb-4">IdealFurniture</h3>
+            <h3 className="text-xl font-bold text-primary dark:text-white mb-4">
+              IdealFurniture
+            </h3>
             <p className="text-sm text-muted dark:text-gray-400">
-              Quality furniture for every room in your home. Transform your space with style and comfort.
+              Quality furniture for every room in your home. Transform your
+              space with style and comfort.
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-sm font-bold text-primary dark:text-white mb-4">Quick Links</h4>
+            <h4 className="text-sm font-bold text-primary dark:text-white mb-4">
+              Quick Links
+            </h4>
             <ul className="space-y-2">
               {[
                 { name: "All Products", href: "/products" },
@@ -39,7 +44,9 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="text-sm font-bold text-primary dark:text-white mb-4">Categories</h4>
+            <h4 className="text-sm font-bold text-primary dark:text-white mb-4">
+              Categories
+            </h4>
             <ul className="space-y-2">
               {[
                 { name: "Living Room", href: "#" },
@@ -61,7 +68,9 @@ export default function Footer() {
 
           {/* Customer Service + Contact */}
           <div>
-            <h4 className="text-sm font-bold text-primary dark:text-white mb-4">Customer Service</h4>
+            <h4 className="text-sm font-bold text-primary dark:text-white mb-4">
+              Customer Service
+            </h4>
             <ul className="space-y-2">
               {[
                 { name: "Shipping Info", href: "/shipping" },
@@ -91,43 +100,47 @@ export default function Footer() {
             </div>
           </div>
         </div>
-{/* Visit Us Section */}
-<div className="mt-8 flex flex-col md:flex-row items-start justify-between gap-6">
-  {/* Left: Address */}
-  <div className="md:w-1/2">
-    <h5 className="text-lg font-semibold text-primary dark:text-white mb-2">
-      Visit Our Showroom
-    </h5>
-    <p className="text-sm text-muted dark:text-gray-400 mb-2">
-      Ideal Furniture Mart<br />
-      Shorkot Road Opposite to Technical College, Pirmahal, Pakistan
-    </p>
-    <p className="text-sm text-muted dark:text-gray-400 mb-2">
-      📞 +92 317 7401136<br />
-      ✉️ salaarasim@gmail.com
-    </p>
-    <a
-      href="https://maps.app.goo.gl/oCV8LPMERjmdtHDh9"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-block mt-2 text-primary hover:underline font-medium"
-    >
-      View on Google Maps →
-    </a>
-  </div>
+        {/* Visit Us Section */}
+        <div className="mt-8 flex flex-col md:flex-row items-start justify-between gap-6">
+          {/* Left: Address */}
+          <div className="md:w-1/2">
+            <h5 className="text-lg font-semibold text-primary dark:text-white mb-2">
+              Visit Our Showroom
+            </h5>
+            <p className="text-sm text-muted dark:text-gray-400 mb-2">
+              Ideal Furniture Mart
+              <br />
+              Shorkot Road Opposite to Technical College, Pirmahal, Pakistan
+            </p>
+            <p className="text-sm text-muted dark:text-gray-400 mb-2">
+              📞 +92 317 7401136
+              <br />
+              ✉️ salaarasim@gmail.com
+            </p>
+            <a
+              href="https://maps.app.goo.gl/oCV8LPMERjmdtHDh9"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block mt-2 text-primary hover:underline font-medium"
+            >
+              View on Google Maps →
+            </a>
+          </div>
 
-  {/* Right: Google Maps Preview */}
-  <div className="md:w-1/2">
-    <iframe
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d109688.97381993107!2d72.36968260063095!3d30.780741371659747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3923170f5ed9f147%3A0x78d85919434c806c!2sIdeal%20Furniture%20Mart!5e0!3m2!1sen!2s!4v1760704863321!5m2!1sen!2s"
-      width="100%"
-      height="200"
-      allowFullScreen
-      loading="lazy"
-      className="rounded-lg border border-gray-200 dark:border-gray-700"
-    ></iframe>
-  </div>
-</div>
+          {/* Right: Google Maps Preview */}
+          <div className="md:w-1/2">
+            <iframe
+              title="Ideal Furniture Mart Location"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d109688.97381993107!2d72.36968260063095!3d30.780741371659747!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3923170f5ed9f147%3A0x78d85919434c806c!2sIdeal%20Furniture%20Mart!5e0!3m2!1sen!2s!4v1760704863321!5m2!1sen!2s"
+              width="100%"
+              height="200"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="rounded-lg border border-gray-200 dark:border-gray-700"
+            ></iframe>
+          </div>
+        </div>
 
         {/* Bottom Bar */}
         <div className="mt-8 pt-8 border-t border-gray-200 dark:border-gray-700">
