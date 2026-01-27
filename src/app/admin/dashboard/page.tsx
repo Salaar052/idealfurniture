@@ -18,16 +18,25 @@ export default async function AdminDashboardPage() {
     redirect("/admin/login");
   }
 
+  // Determine base URL depending on environment
+  const baseUrl =
+    process.env.NODE_ENV === "development"
+      ? `http://localhost:${process.env.PORT || 3000}`
+      : process.env.NEXT_PUBLIC_BASE_URL;
+
   // Fetch products server-side
   let products: Product[] = [];
   try {
-    const res = await fetch("http://localhost:3000/api/products/get", {
+    const res = await fetch(`${baseUrl}/api/products/get`, {
       headers: { Cookie: `adminToken=${token}` }, // forward token if needed
       cache: "no-store", // always get latest
     });
+
     if (res.ok) {
       const data = await res.json();
       products = data.products || [];
+    } else {
+      console.error("Failed to fetch products:", res.status, await res.text());
     }
   } catch (error) {
     console.error("Error fetching products:", error);
