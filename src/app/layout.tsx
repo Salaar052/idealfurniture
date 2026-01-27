@@ -1,3 +1,4 @@
+import Script from "next/script";
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -14,9 +15,27 @@ export default function RootLayout({
   return (
     <html lang="en" className="light">
       <head>
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-NC4P95D1E0"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-NC4P95D1E0');
+          `}
+        </Script>
+
+        {/* Preload hero image */}
         <link rel="preload" as="image" href="/images/img1.webp" />
 
+        {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
+
+        {/* Fonts */}
         <link
           href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap"
           rel="stylesheet"
@@ -26,6 +45,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
+
       <body className="antialiased bg-background-light text-light">
         {children}
       </body>
