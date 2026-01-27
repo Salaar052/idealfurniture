@@ -27,7 +27,7 @@ export default function CategoryFilter({ onCategoryChange }: CategoryFilterProps
   };
 
   return (
-    <div className="flex gap-3 p-4 pl-24 overflow-x-auto scrollbar-hide">
+    <div className="flex gap-3 p-4 pl-2 md:pl-24 overflow-x-auto scrollbar-hide">
       {categories.map((category) => (
         <button
           key={category.id}

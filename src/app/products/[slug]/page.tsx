@@ -5,8 +5,8 @@ interface ProductPageProps {
   params: { slug: string };
 }
 
-export default function ProductDetailPage({ params }: ProductPageProps) {
-  const awaitedParams =params;
+export default async function ProductDetailPage({ params }: ProductPageProps) {
+  const awaitedParams = await params;
   console.log(awaitedParams);
   const slug = awaitedParams.slug; // already a string
   return <ProductDetailClient slug={slug} />;

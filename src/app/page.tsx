@@ -126,16 +126,6 @@ export default function HomePage() {
                     ))}
               </div>
 
-              {items.length > 3 && (
-                <div className="text-right mt-4">
-                  <Link
-                    href={`/categories/${category}`}
-                    className="text-primary font-medium hover:underline"
-                  >
-                    View all →
-                  </Link>
-                </div>
-              )}
             </section>
           ))}
 

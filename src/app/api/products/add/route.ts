@@ -31,16 +31,13 @@ export async function POST(req: Request) {
     const arrayBuffer = await image.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    // Upload to Cloudinary with automatic optimization
+    // Upload to Cloudinary with original quality preserved
     const uploadResult = await new Promise<{ secure_url: string }>((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
           folder: "ideal-furniture/products",
-          transformation: [
-            { width: 1200, height: 900, crop: "limit" }, // resize large images
-            { quality: "auto" },                          // auto compression
-            { fetch_format: "auto" },                     // WebP/AVIF if supported
-          ],
+          quality: "100",        // Keep original quality
+          flags: "preserve_transparency",  // Preserve PNG transparency if present
         },
         (error, result) => {
           if (error || !result) reject(error);

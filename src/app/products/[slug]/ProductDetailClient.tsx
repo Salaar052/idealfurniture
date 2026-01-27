@@ -64,9 +64,11 @@ export default function ProductDetailClient({ product: productFromServer, slug }
       <div className="min-h-screen bg-background-light dark:bg-background-dark flex flex-col items-center px-4 sm:px-6 md:px-8 py-8">
         <div className="w-full flex justify-center">
           <div className="max-w-4xl flex flex-col">
-            <div className="mb-6">
-              <BackButton />
-            </div>
+            <div className="mb-6 fixed top-16  left-4 z-50">
+  <BackButton />
+</div>
+
+
 
             <div className="cursor-pointer mb-6 flex justify-center" onClick={() => setIsModalOpen(true)}>
               <Image

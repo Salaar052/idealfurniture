@@ -21,54 +21,63 @@ export default function AdminDashboardClient({ initialProducts }: Props) {
     product: null,
   });
   const [deleting, setDeleting] = useState(false);
+  const [activeProduct, setActiveProduct] = useState<string | null>(null);
   const router = useRouter();
 
   const handleDelete = async () => {
-  if (!deleteModal.product) return;
+    if (!deleteModal.product) return;
 
-  setDeleting(true);
-  try {
-    const res = await fetch(`/api/products/delete/${deleteModal.product._id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/products/delete/${deleteModal.product._id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
 
-    if (res.ok) {
-      setProducts(products.filter((p) => p._id !== deleteModal.product?._id));
-      setDeleteModal({ show: false, product: null });
-    } else {
-      const data = await res.json();
-      alert(data.message || "Failed to delete product");
+      if (res.ok) {
+        setProducts(products.filter((p) => p._id !== deleteModal.product?._id));
+        setDeleteModal({ show: false, product: null });
+        setActiveProduct(null);
+      } else {
+        const data = await res.json();
+        alert(data.message || "Failed to delete product");
+      }
+    } catch (error) {
+      console.error("Error deleting product:", error);
+      alert("An error occurred");
+    } finally {
+      setDeleting(false);
     }
-  } catch (error) {
-    console.error("Error deleting product:", error);
-    alert("An error occurred");
-  } finally {
-    setDeleting(false);
-  }
-};
+  };
 
-
+  const handleProductClick = (productId: string) => {
+    // Toggle: if already active, close it; otherwise open it
+    if (activeProduct === productId) {
+      setActiveProduct(null);
+    } else {
+      setActiveProduct(productId);
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-gradient-to-br from-orange-50 via-white to-orange-50">
       {/* Top App Bar */}
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-md p-4 pb-2 shadow-sm">
-      <div className="flex h-12 w-12 shrink-0 items-center">
-    <button
-      onClick={() => router.push("/")}
-      className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-all"
-    >
-      <svg
-        className="h-6 w-6 text-gray-700"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-      </svg>
-    </button>
-  </div>
+        <div className="flex h-12 w-12 shrink-0 items-center">
+          <button
+            onClick={() => router.push("/")}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 transition-all"
+          >
+            <svg
+              className="h-6 w-6 text-gray-700"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        </div>
         <div className="flex h-12 w-12 shrink-0 items-center"></div>
         <h2 className="flex-1 text-center text-lg font-bold leading-tight tracking-tight text-gray-900">
           All Products
@@ -94,19 +103,42 @@ export default function AdminDashboardClient({ initialProducts }: Props) {
           </div>
         ) : (
           products.map((product) => (
-            <div key={product._id} className="group relative overflow-hidden rounded-xl bg-white shadow-sm border border-gray-200 transition-all hover:shadow-md">
-              {/* Delete Action */}
-              <div className="absolute right-0 top-0 flex h-full w-20 translate-x-full items-center justify-center bg-red-500 text-white transition-transform group-hover:translate-x-0">
+            <div
+              key={product._id}
+              className="group relative overflow-hidden rounded-xl bg-white shadow-sm border border-gray-200 transition-all hover:shadow-md"
+            >
+              {/* Delete Action - Shows on tap (mobile) or hover (desktop) */}
+              <div
+                className={`absolute right-0 top-0 flex h-full w-20 items-center justify-center bg-red-500 text-white transition-transform duration-300 md:group-hover:translate-x-0 ${
+                  activeProduct === product._id ? "translate-x-0" : "translate-x-full"
+                }`}
+              >
                 <button
-                  onClick={() => setDeleteModal({ show: true, product })}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setDeleteModal({ show: true, product });
+                  }}
                   className="flex h-full w-full flex-col items-center justify-center gap-1"
                 >
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
                   <span className="text-xs font-medium">Delete</span>
                 </button>
               </div>
 
               {/* Product Content */}
-              <div className="flex items-center justify-between gap-4 p-4 transition-transform group-hover:-translate-x-20">
+              <div
+                onClick={() => handleProductClick(product._id)}
+                className={`flex items-center justify-between gap-4 p-4 transition-transform duration-300 cursor-pointer md:cursor-default md:group-hover:-translate-x-20 ${
+                  activeProduct === product._id ? "-translate-x-20" : ""
+                }`}
+              >
                 <div className="flex items-center gap-4">
                   <div
                     className="h-16 w-16 flex-shrink-0 rounded-lg bg-cover bg-center bg-no-repeat shadow-sm"
