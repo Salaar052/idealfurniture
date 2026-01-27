@@ -120,7 +120,10 @@ export default function HomePage() {
                             {product.name}
                           </h3>
                           <p className="text-muted text-sm line-clamp-2">{product.description}</p>
-                          <p className="text-black font-bold mt-3">Rs. {product.price}</p>
+                          <p className="text-black font-bold mt-3">
+  {product.price === 0 ? "Call for Price" : `Rs. ${product.price}`}
+</p>
+
                         </div>
                       </Link>
                     ))}

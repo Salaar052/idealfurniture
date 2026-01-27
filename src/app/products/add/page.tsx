@@ -34,73 +34,37 @@ export default function AddProductPage() {
     console.log("Description:", formData.get("description"));
     console.log("Image:", formData.get("image"));
 
-    // Show loader for at least 3 seconds, then navigate
-    const minLoadTime = new Promise(resolve => setTimeout(resolve, 3000));
-
-    // Start the upload in the background
-    const uploadPromise = fetch("/api/products/add", {
-      method: "POST",
-      body: formData,
-      credentials: "include",
-    })
-      .then(async (res) => {
-        console.log("Response received:", res);
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.message || "Failed to add product");
-        }
-
-        return data;
-      })
-      .catch((error) => {
-        console.error("Error adding product:", error);
-        // Store error for potential handling, but don't block navigation
-        return { error: error.message };
-      });
-
     try {
-      // Wait for minimum 3 seconds to show loader
-      await minLoadTime;
-      
-      // Navigate to dashboard
-      router.push("/admin/dashboard");
-
-      // Continue upload in background and refresh when done
-      uploadPromise.then((result) => {
-        if (!result.error) {
-          // Trigger a refresh of the dashboard page
-          router.refresh();
-        }
+      const res = await fetch("/api/products/add", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
       });
+      console.log("Response received:", res);
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.message || "Failed to add product");
+        setLoading(false);
+        return;
+      }
+
+      router.push("/admin/dashboard");
     } catch (error) {
-      console.error("Navigation error:", error);
-      setError("An error occurred");
+      console.error("Error adding product:", error);
+      setError("An error occurred while adding the product");
       setLoading(false);
     }
   };
 
   return (
     <div className="relative flex min-h-screen w-full flex-col bg-gradient-to-br from-orange-50 via-white to-orange-50">
-      {/* Loading Overlay */}
-      {loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-4 bg-white rounded-2xl p-8 shadow-2xl">
-            <div className="h-16 w-16 animate-spin rounded-full border-4 border-orange-600 border-t-transparent"></div>
-            <div className="text-center">
-              <p className="text-lg font-semibold text-gray-900">Adding Product...</p>
-              <p className="text-sm text-gray-600 mt-1">Please wait</p>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Top App Bar */}
       <div className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur-md p-4 shadow-sm">
         <button
           onClick={() => router.back()}
-          disabled={loading}
-          className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100 transition-colors disabled:opacity-50"
+          className="flex h-10 w-10 items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
         >
           <svg
             className="h-6 w-6 text-gray-700"
@@ -168,8 +132,7 @@ export default function AddProductPage() {
                       ) as HTMLInputElement;
                       if (input) input.value = "";
                     }}
-                    disabled={loading}
-                    className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors disabled:opacity-50"
+                    className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
                   >
                     <svg
                       className="h-5 w-5"
@@ -189,9 +152,7 @@ export default function AddProductPage() {
               ) : (
                 <label
                   htmlFor="image"
-                  className={`flex w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-12 hover:border-orange-400 hover:bg-orange-50 transition-all ${
-                    loading ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-                  }`}
+                  className="flex w-full cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-12 hover:border-orange-400 hover:bg-orange-50 transition-all"
                 >
                   <svg
                     className="h-12 w-12 text-gray-400"
@@ -221,7 +182,6 @@ export default function AddProductPage() {
                 accept="image/*"
                 required
                 onChange={handleImageChange}
-                disabled={loading}
                 className="hidden"
               />
             </div>
@@ -242,9 +202,8 @@ export default function AddProductPage() {
                 name="name"
                 type="text"
                 required
-                disabled={loading}
                 placeholder="e.g., Modern Velvet Sofa"
-                className="text-black w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-black w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
               />
             </div>
 
@@ -267,9 +226,8 @@ export default function AddProductPage() {
                   step="1"
                   min="0"
                   required
-                  disabled={loading}
                   placeholder="0"
-                  className="text-black w-full rounded-xl border border-gray-300 pl-8 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="text-black w-full rounded-xl border border-gray-300 pl-8 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all"
                 />
               </div>
             </div>
@@ -286,8 +244,7 @@ export default function AddProductPage() {
                 id="category"
                 name="category"
                 required
-                disabled={loading}
-                className="text-black w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-black w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all bg-white"
               >
                 <option value="">Select a category</option>
                 <option value="bed">Bed</option>
@@ -312,9 +269,8 @@ export default function AddProductPage() {
                 name="description"
                 required
                 rows={4}
-                disabled={loading}
                 placeholder="Describe the product features, materials, dimensions, etc."
-                className="text-black w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-black w-full rounded-xl border border-gray-300 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none"
               />
             </div>
           </div>
@@ -325,14 +281,14 @@ export default function AddProductPage() {
               type="button"
               onClick={() => router.back()}
               disabled={loading}
-              className="flex-1 rounded-xl bg-gray-100 px-6 py-4 text-base font-semibold text-gray-700 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 rounded-xl bg-gray-100 px-6 py-4 text-base font-semibold text-gray-700 hover:bg-gray-200 transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 rounded-xl bg-orange-600 px-6 py-4 text-base font-semibold text-white hover:bg-orange-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
+              className="flex-1 rounded-xl bg-orange-600 px-6 py-4 text-base font-semibold text-white hover:bg-orange-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
             >
               {loading ? (
                 <>

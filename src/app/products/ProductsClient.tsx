@@ -17,7 +17,10 @@ interface Product {
 
 const ProductCard = memo(function ProductCard({ product }: { product: Product }) {
   const slug = encodeURIComponent(product.name.toLowerCase().replace(/\s+/g, "-"));
-  const whatsappUrl = `https://wa.me/923177401136?text=${encodeURIComponent(`Hi! I'm interested in the ${product.name}.`)}`;
+  const productUrl = `https://idealfurniture.store/products/${slug}`; // full product URL
+  const whatsappUrl = `https://wa.me/923177401136?text=${encodeURIComponent(
+    `Hi! I'm interested in the ${product.name}. Check it here: ${productUrl}`
+  )}`;
 
   return (
     <div className="flex flex-col bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 group mb-5 mr-5">
@@ -39,7 +42,10 @@ const ProductCard = memo(function ProductCard({ product }: { product: Product })
         <Link href={`/products/${slug}`}>
           <p className="text-muted text-base font-semibold line-clamp-1 hover:underline">{product.name}</p>
         </Link>
-        <p className="text-muted text-base font-medium">${product.price.toFixed(2)}</p>
+        <p className="text-muted text-base font-medium">
+          {product.price === 0 ? "Call for Price" : `$${product.price.toFixed(2)}`}
+        </p>
+
         <a
           href={whatsappUrl}
           target="_blank"
@@ -52,6 +58,7 @@ const ProductCard = memo(function ProductCard({ product }: { product: Product })
     </div>
   );
 });
+
 
 export default function ProductsClient() {
   const { products, fetchProducts,productCount } = useProductStore();

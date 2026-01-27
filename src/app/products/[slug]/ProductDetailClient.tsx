@@ -65,8 +65,8 @@ export default function ProductDetailClient({ product: productFromServer, slug }
         <div className="w-full flex justify-center">
           <div className="max-w-4xl flex flex-col">
             <div className="mb-6 fixed top-16  left-4 z-50">
-  <BackButton />
-</div>
+              <BackButton />
+            </div>
 
 
 
@@ -84,17 +84,25 @@ export default function ProductDetailClient({ product: productFromServer, slug }
 
             <div className="w-full mt-6 space-y-4 text-center sm:text-left">
               <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-light dark:text-white">{product.name}</h1>
-              <p className="text-lg sm:text-xl font-medium text-primary">Rs. {product.price}</p>
+              <p className="text-lg sm:text-xl font-medium text-primary">
+                {product.price === 0 ? "Call for Price" : `Rs. ${product.price}`}
+              </p>
+
               <p className="text-muted dark:text-gray-300 leading-relaxed text-sm sm:text-base">{product.description}</p>
 
               <a
-                href={`https://wa.me/923177401136?text=Hi! I'm interested in the ${encodeURIComponent(product.name)}.`}
+                href={`https://wa.me/923177401136?text=${encodeURIComponent(
+                  `Hi! I'm interested in the ${product.name}. Check it here: https://idealfurniture.store/products/${encodeURIComponent(
+                    product.name.toLowerCase().replace(/\s+/g, "-")
+                  )}`
+                )}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-all duration-300 text-base font-medium"
               >
                 Contact Us on WhatsApp
               </a>
+
             </div>
           </div>
         </div>

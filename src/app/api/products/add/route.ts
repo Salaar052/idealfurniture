@@ -18,13 +18,15 @@ export async function POST(req: Request) {
 
     const formData = await req.formData();
     const name = formData.get("name") as string;
-    const price = Number(formData.get("price"));
-    const description = formData.get("description") as string;
+    const priceInput = formData.get("price") as string;
+    const price = priceInput ? Number(priceInput) : 0;
+    const description = (formData.get("description") as string) || "";
     const category = formData.get("category") as string;
     const image = formData.get("image") as File;
 
-    if (!name || !price || !description || !category || !image) {
-      return NextResponse.json({ message: "All fields required" }, { status: 400 });
+    // Only name, category, and image are required
+    if (!name || !category || !image) {
+      return NextResponse.json({ message: "Name, category, and image are required" }, { status: 400 });
     }
 
     // Convert File to Buffer
