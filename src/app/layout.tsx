@@ -1,6 +1,14 @@
-import Script from "next/script";
 import type { Metadata } from "next";
+import Script from "next/script";
+import { Work_Sans } from "next/font/google";
 import "./globals.css";
+
+// ✅ Self-hosted Google Font (NO render blocking)
+const workSans = Work_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "IdealFurniture",
@@ -29,24 +37,21 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Preload hero image */}
-        <link rel="preload" as="image" href="/images/img1.webp" />
+        {/* Preload hero image (LCP optimization) */}
+        <link
+          rel="preload"
+          as="image"
+          href="/images/img1.webp"
+          fetchPriority="high"
+        />
 
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
-
-        {/* Fonts */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap"
-          rel="stylesheet"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
-          rel="stylesheet"
-        />
       </head>
 
-      <body className="antialiased bg-background-light text-light">
+      <body
+        className={`${workSans.className} antialiased bg-background-light text-light`}
+      >
         {children}
       </body>
     </html>
